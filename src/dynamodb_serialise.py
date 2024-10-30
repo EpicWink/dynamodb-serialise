@@ -19,7 +19,7 @@ def _binary(v: t.Union[str, bytes]) -> bytes:
 
     import base64
 
-    v_b64 = v.encode()
+    v_b64 = v.encode(encoding="utf-8")
     return base64.b64decode(v_b64)
 
 
@@ -79,7 +79,7 @@ def serialise(
         if bytes_to_base64:
             import base64
 
-            o = base64.b64encode(o).decode()
+            o = base64.b64encode(o).decode(encoding="utf-8")
         return {"B": o}
 
     elif isinstance(o, set):
@@ -103,7 +103,7 @@ def serialise(
         elif type_ is bytes and bytes_to_base64:
             import base64
 
-            o = [base64.b64encode(v).decode() for v in o]
+            o = [base64.b64encode(v).decode(encoding="utf-8") for v in o]
         return {key: list(o)}
 
     elif isinstance(o, (list, tuple, collections.UserList)):
