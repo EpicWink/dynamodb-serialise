@@ -1,9 +1,41 @@
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-    "setuptools >= 42",
+    "setuptools >= 61.0",
     "setuptools-scm[toml] >= 3.4",
-    "wheel",
 ]
+
+[project]
+name = "dynamodb-serialise"
+
+authors = [
+    { name = "Laurie O", email = "laurie_opperman@hotmail.com" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Database",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+]
+description = "DynamoDB value serialisation and deserialisation"
+keywords = ["dynamodb", "serialisation"]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = "~= 3.7"
+
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/EpicWink/dynamodb-serialise"
+
+[tool.setuptools]
+include-package-data = false
+package-dir = { "" = "src" }
+py-modules = ["dynamodb_serialise"]
 
 [tool.setuptools_scm]
