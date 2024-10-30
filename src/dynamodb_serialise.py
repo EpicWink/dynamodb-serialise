@@ -1,7 +1,6 @@
 """Deserialise from and serialise to DynamoDB."""
 
 import sys
-import collections
 import typing as t
 
 
@@ -76,9 +75,17 @@ def serialise(
     """
 
     number_types = (int, float)
+    list_types = (list, tuple)
+    map_types = (dict,)
+
     decimal = sys.modules.get("decimal")
     if decimal:
         number_types += (decimal.Decimal,)
+
+    collections = sys.modules.get("collections")
+    if collections:
+        list_types += (collections.UserList,)
+        map_types += (collections.OrderedDict, collections.UserDict)
 
     if o is None:
         return {"NULL": True}
@@ -115,12 +122,12 @@ def serialise(
             o = [_to_base64(v) for v in o]
         return {key: list(o)}
 
-    elif isinstance(o, (list, tuple, collections.UserList)):
+    elif isinstance(o, list_types):
         return {
             "L": [serialise(v, bytes_to_base64, empty_set_type, fallback) for v in o]
         }
 
-    elif isinstance(o, (dict, collections.OrderedDict, collections.UserDict)):
+    elif isinstance(o, map_types):
         return {
             "M": {
                 k: serialise(v, bytes_to_base64, empty_set_type, fallback)
