@@ -52,6 +52,13 @@ def deserialise(o: t.Dict[str, t.Any]) -> t.Any:
         raise ValueError(f"Unknown DynamoDB type '{dynamodb_type}': {o}")
 
 
+def _to_base64(o: bytes) -> str:
+    """Convert bytes to base-64."""
+    import base64
+
+    return base64.b64encode(o).decode(encoding="utf-8")
+
+
 def serialise(
     o: t.Any,
     bytes_to_base64: bool = False,
@@ -77,9 +84,7 @@ def serialise(
         return {"N": str(o)}
     elif isinstance(o, bytes):
         if bytes_to_base64:
-            import base64
-
-            o = base64.b64encode(o).decode(encoding="utf-8")
+            o = _to_base64(o)
         return {"B": o}
 
     elif isinstance(o, set):
@@ -101,9 +106,7 @@ def serialise(
         if type_ == (int, float):
             o = [str(v) for v in o]
         elif type_ is bytes and bytes_to_base64:
-            import base64
-
-            o = [base64.b64encode(v).decode(encoding="utf-8") for v in o]
+            o = [_to_base64(v) for v in o]
         return {key: list(o)}
 
     elif isinstance(o, (list, tuple, collections.UserList)):
