@@ -1,5 +1,6 @@
 """Deserialise from and serialise to DynamoDB."""
 
+import sys
 import collections
 import typing as t
 
@@ -74,13 +75,18 @@ def serialise(
         fallback: applied to values with unhandled types, default: raise
     """
 
+    number_types = (int, float)
+    decimal = sys.modules.get("decimal")
+    if decimal:
+        number_types += (decimal.Decimal,)
+
     if o is None:
         return {"NULL": True}
     elif isinstance(o, str):
         return {"S": o}
     elif isinstance(o, bool):
         return {"BOOL": o}
-    elif isinstance(o, (int, float)):
+    elif isinstance(o, number_types):
         return {"N": str(o)}
     elif isinstance(o, bytes):
         if bytes_to_base64:
@@ -95,7 +101,7 @@ def serialise(
             return {empty_set_type: []}
 
         first, *remaining = o
-        for type_, key in ((str, "SS"), ((int, float), "NS"), (bytes, "BS")):
+        for type_, key in ((str, "SS"), (number_types, "NS"), (bytes, "BS")):
             if isinstance(first, type_):
                 if not all(isinstance(r, type_) for r in remaining):
                     raise ValueError(f"Set elements must be of only one type: {o}")
@@ -103,7 +109,7 @@ def serialise(
         else:
             raise ValueError(f"Unhandled type for set elements: {o}")
 
-        if type_ == (int, float):
+        if type_ is number_types:
             o = [str(v) for v in o]
         elif type_ is bytes and bytes_to_base64:
             o = [_to_base64(v) for v in o]
