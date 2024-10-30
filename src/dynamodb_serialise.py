@@ -104,8 +104,6 @@ def serialise(
             import base64
 
             o = [base64.b64encode(v).decode() for v in o]
-        else:
-            o = list(o)
         return {key: list(o)}
 
     elif isinstance(o, (list, tuple, collections.UserList)):
