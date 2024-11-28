@@ -120,7 +120,9 @@ def serialise(
             o = [str(v) for v in o]
         elif type_ is bytes and bytes_to_base64:
             o = [_to_base64(v) for v in o]
-        return {key: list(o)}
+        else:
+            o = list(o)
+        return {key: o}
 
     elif isinstance(o, list_types):
         return {
