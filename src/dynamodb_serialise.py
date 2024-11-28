@@ -139,3 +139,29 @@ def serialise(
         return fallback(o)
     else:
         raise ValueError(f"Unhandled type: {o}")
+
+
+def main() -> None:
+    """(De)serialise stdin to stdout as DynamoDB JSON."""
+    import sys
+    import json
+
+    deserialisation_requested = sys.argv[1:2] == ["-d"]
+    if sys.argv[2 if deserialisation_requested else 1 :]:
+        print(f"Usage: {sys.argv[0]} [-d]", file=sys.stderr)
+        sys.exit(1)
+
+    transform = (
+        deserialise
+        if deserialisation_requested
+        else lambda x: serialise(x, bytes_to_base64=True)
+    )
+    json.dump(
+        transform(json.load(sys.stdin)),
+        sys.stdout,
+        indent=2 if sys.stdout.isatty() else None,
+    )
+
+
+if __name__ == "__main__":
+    main()
