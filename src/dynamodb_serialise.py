@@ -102,9 +102,6 @@ def serialise(
 
     elif isinstance(o, set):
         if not o:
-            import warnings
-
-            warnings.warn(f"Casting empty set to type: {empty_set_type}")
             return {empty_set_type: []}
 
         first, *remaining = o
