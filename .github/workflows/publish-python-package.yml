@@ -5,7 +5,29 @@ on:
     types: [created]
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        cache: pip
+    - name: Install 'build'
+      run: pip install build
+    - name: Build package
+      run: python -m build -o ./dist .
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: packages
+        path: dist/
+        if-no-files-found: error
+        compression-level: 0
+
   release:
+    needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -13,15 +35,11 @@ jobs:
     permissions:
       id-token: write
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Download package
+      uses: actions/download-artifact@v4
       with:
-        python-version: '3.x'
-    - name: Build package
-      run: |
-        pip install build
-        pyproject-build
+        name: packages
+        path: dist/
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
