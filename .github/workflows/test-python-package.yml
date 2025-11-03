@@ -26,12 +26,8 @@ jobs:
         cache: pip
         python-version: ${{ matrix.python-version }}
     - name: Install package
-      run: pip install .
+      run: pip install --requirement ./tests/requirements.txt black pytest .
     - name: Run test suite
-      run: |
-        pip install -r tests/requirements.txt
-        pytest -vvra
+      run: pytest -vvra
     - name: Lint with black
-      run: |
-        pip install black
-        black --check src
+      run: black --check ./src
